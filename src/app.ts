@@ -58,7 +58,7 @@ app.post(myURL.VIDEOS, (req: Request, res: Response) => {
     const errors = defaultValidatePost(req.body);
 
     if (errors.length > 0) {
-        return res.status(HttpStatus.BadRequest).json({ errors });
+        return res.status(HttpStatus.BadRequest).json({ errorsMessages: errors  });
     }
 
 
@@ -94,7 +94,7 @@ app.put(myURL.VIDEOS + '/:id', (req: Request, res: Response) => {
 
     const errors = validateUpdateVideo(req.body);
     if(errors.length > 1){
-        return res.status(HttpStatus.BadRequest).json({errors})
+        return res.status(HttpStatus.BadRequest).json({errorsMessages: errors })
     }
 
     db[index] = {
