@@ -20,78 +20,24 @@ export enum myURL {
     TEST = '/testing/all-data'
 }
 
+
+
+
 app.get(myURL.VIDEOS, (req: Request, res: Response) => {
     res.status(HttpStatus.OK).json(db);
 });
 
 
+app.get(myURL.VIDEOS + '/:id', (req: Request, res: Response) => {
+    const idURL = Number(req.params.id);
+    const video = db.find(v => v.id === idURL);
 
-
-/*
-title:	string  maxLength: 40
-author:	string  maxLength: 20
-availableResolutions: Enum: [ P144, P240, P360, P480, P720, P1080, P1440, P2160 ]
-
-*/
-
-function defaultValidatePost(body: inputVideoData) {
-    const errors: { message: string, field: string }[] = [];
-
-    if (!body.title || body.title.length > 40) {
-        errors.push({ message: 'Incorrect title', field: 'title' })
+    if (!video) {
+        return res.sendStatus(HttpStatus.NotFound);
     }
 
-    if (!body.author || body.author.length > 20) {
-        errors.push({ message: 'Incorrect author', field: 'author' })
-    }
-
-    if (!Array.isArray(body.availableResolutions) || body.availableResolutions.length < 1) {
-        errors.push({ message: `Incorrect availableResolutions: it's not array or empty`, field: 'availableResolutions' })
-
-    } else {
-        const allowed = Object.values(Resolution) //изначально объект, сейчас уже стал массивом значений [values]
-        const invalid = body.availableResolutions.filter(el => !allowed.includes(el))
-        if (invalid.length > 0) {
-            errors.push({ message: `Incorrect availableResolutions: ${invalid.join(', ')}`, field: 'availableResolutions' })
-        }
-    }
-
-    return errors;
-}
-/*
-title	string        maxLength: 40
-author	string        maxLength: 20
-availableResolutions enum []
-
-
-canBeDownloaded  boolean
-minAgeRestriction*	Number | null minimum: 1 maximum: 18
-publicationDate  string
-*/
-function validateUpdateVideo(body: updateVideoData) {
-    const errors = defaultValidatePost(body);
-
-    if(typeof body.canBeDownloaded !== "boolean"){
-        errors.push({message: 'incorrect type data in canBeDownloaded ', field: 'canBeDownloaded'})
-    }
-    
-    if(body.minAgeRestriction !== null && (body.minAgeRestriction < 1 || body.minAgeRestriction > 18)) {
-        errors.push({message: 'incorrect minAgeRestriction ', field: 'minAgeRestriction'})
-    }
-
-
-    if (typeof body.publicationDate !== "string" ||
-    isNaN(Date.parse(body.publicationDate))) {
-
-    errors.push({
-        message: "Incorrect publicationDate",
-        field: "publicationDate"
-    });
-}
-
-    return errors;
-}
-
+    res.status(HttpStatus.OK).json(video);
+});
 
 
 
@@ -178,3 +124,67 @@ app.delete(myURL.TEST, (req: Request, res: Response) => {
 
 
 
+/*
+title:	string  maxLength: 40
+author:	string  maxLength: 20
+availableResolutions: Enum: [ P144, P240, P360, P480, P720, P1080, P1440, P2160 ]
+
+*/
+
+function defaultValidatePost(body: inputVideoData) {
+    const errors: { message: string, field: string }[] = [];
+
+    if (!body.title || body.title.length > 40) {
+        errors.push({ message: 'Incorrect title', field: 'title' })
+    }
+
+    if (!body.author || body.author.length > 20) {
+        errors.push({ message: 'Incorrect author', field: 'author' })
+    }
+
+    if (!Array.isArray(body.availableResolutions) || body.availableResolutions.length < 1) {
+        errors.push({ message: `Incorrect availableResolutions: it's not array or empty`, field: 'availableResolutions' })
+
+    } else {
+        const allowed = Object.values(Resolution) //изначально объект, сейчас уже стал массивом значений [values]
+        const invalid = body.availableResolutions.filter(el => !allowed.includes(el))
+        if (invalid.length > 0) {
+            errors.push({ message: `Incorrect availableResolutions: ${invalid.join(', ')}`, field: 'availableResolutions' })
+        }
+    }
+
+    return errors;
+}
+/*
+title	string        maxLength: 40
+author	string        maxLength: 20
+availableResolutions enum []
+
+
+canBeDownloaded  boolean
+minAgeRestriction*	Number | null minimum: 1 maximum: 18
+publicationDate  string
+*/
+function validateUpdateVideo(body: updateVideoData) {
+    const errors = defaultValidatePost(body);
+
+    if(typeof body.canBeDownloaded !== "boolean"){
+        errors.push({message: 'incorrect type data in canBeDownloaded ', field: 'canBeDownloaded'})
+    }
+    
+    if(body.minAgeRestriction !== null && (body.minAgeRestriction < 1 || body.minAgeRestriction > 18)) {
+        errors.push({message: 'incorrect minAgeRestriction ', field: 'minAgeRestriction'})
+    }
+
+
+    if (typeof body.publicationDate !== "string" ||
+    isNaN(Date.parse(body.publicationDate))) {
+
+    errors.push({
+        message: "Incorrect publicationDate",
+        field: "publicationDate"
+    });
+}
+
+    return errors;
+}
