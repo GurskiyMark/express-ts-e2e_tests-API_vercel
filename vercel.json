@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "express-ts-e2e_tests-API_vercel",
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
+    }
+  ]
+}
